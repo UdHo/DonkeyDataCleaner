@@ -8,9 +8,11 @@ Start the program in the folder with the recorded data to see the image and the 
 * b, n and m write the filename and angle 0 to change.txt (Sorry, forgot the 0 above).
 * Every other key write the filename to delete.txt.
 
-##TODO:
+## TODO:
+
 * Skip files that are already in the files above.
 * Improve key assignment... ;)
 
-##Troubleshooting:
+## Troubleshooting:
+
 * Needs tkinter and pil package ("yaourt -S tkinter python-pillow" in arch linux).
