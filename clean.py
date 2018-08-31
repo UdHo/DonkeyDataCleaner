@@ -11,12 +11,14 @@ class DataCleaner:
         self.window = Tk()
         self.panel = Label(self.window)
         self.angle = Label(self.window)
+        self.bar = Canvas(self.window, width=200, height=30, bg='white')
         self.imagelist = list(
             filter(lambda x: x.find(".jpg") != -1, os.listdir(path)))
         self.imageiter = iter(self.imagelist)
         self.nextImage()
         self.panel.pack()
         self.angle.pack()
+        self.bar.pack()
         self.window.bind("<Key>", self.key)
         self.window.mainloop()
 
@@ -24,6 +26,10 @@ class DataCleaner:
         self.loadImage(next(self.imageiter))
         self.updateAngle()
 
+    def drawBar(self,angle):
+        self.bar.delete("all")
+        self.bar.create_rectangle(100 + int(angle*100),0,100,30,fill = "green")
+        
     def loadImage(self, imagePath):
         self.imagename = imagePath
         self.image = ImageTk.PhotoImage(
@@ -37,6 +43,7 @@ class DataCleaner:
             d = json.load(json_data)
             self.angle.config(text=d["user/angle"])
             print(d)
+        self.drawBar(d["user/angle"])
 
     def key(self, event):
         print("pressed", repr(event.char))
