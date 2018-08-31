@@ -12,8 +12,8 @@ class DataCleaner:
         self.panel = Label(self.window)
         self.angle = Label(self.window)
         self.bar = Canvas(self.window, width=200, height=30, bg='white')
-        self.imagelist = list(
-            filter(lambda x: x.find(".jpg") != -1, os.listdir(path)))
+        self.imagelist = list(sorted(list(
+            filter(lambda x: x.find(".jpg") != -1, os.listdir(path))) , key = lambda x: int(x[:x.find("_")])))
         self.imageiter = iter(self.imagelist)
         self.nextImage()
         self.panel.pack()
