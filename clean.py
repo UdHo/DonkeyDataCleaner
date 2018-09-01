@@ -52,7 +52,7 @@ class DataCleaner:
             print("Keep")
             self.keep()
         elif c is "n" or c is "m" or c is "b":
-            changeDirection(0.0)
+            self.changeDirection(0.0)
         else:
             try:
                 direction = int(c)
