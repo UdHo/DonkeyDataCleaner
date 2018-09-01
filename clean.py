@@ -23,7 +23,7 @@ class DataCleaner:
         self.imageiter = iter(self.imagelist)
         self.panels = [self.panel]
         for i in range(10):
-            self.loadImageInQueue(next(self.imageiter),False)
+            self.loadImageInQueue(False)
         for i in range(len(self.futureImages)):
             self.panels.append(Label(self.frame))
         for i in self.panels:
@@ -50,7 +50,7 @@ class DataCleaner:
          
         
     def nextImage(self):
-        self.loadImageInQueue(next(self.imageiter))
+        self.loadImageInQueue()
         self.imagename = self.futureImagenames[0]
         self.image = self.futureImages[0]
         self.imagenr = self.imagename[:self.imagename.find("_")] 
@@ -59,9 +59,12 @@ class DataCleaner:
         self.updateImages()
         self.updateAngle()
 
-    def loadImageInQueue(self, imagename, shift = True):
-        self.futureImages.append(self.loadImage(imagename))
-        self.futureImagenames.append(imagename)
+    def loadImageInQueue(self, shift = True):
+        nextname = next(self.imageiter)
+        while self.skipImage(nextname):
+            nextname = next(self.imageiter)
+        self.futureImages.append(self.loadImage(nextname))
+        self.futureImagenames.append(nextname)
         if shift:
           self.futureImages.pop(0)
           self.futureImagenames.pop(0)
@@ -86,6 +89,15 @@ class DataCleaner:
             self.angle.config(text=self.jsonData["user/angle"])
             print(self.jsonData)
         self.drawBar(self.jsonData["user/angle"])
+        
+    def skipImage(self, filename):
+        with open(self.path+ "/record_" +filename[:filename.find("_")]+".json") as json_data:
+            data = json.load(json_data)
+        print(data)
+        print(data.keys())
+        print("status" in data)
+        return "status" in data
+            
         
     def key(self, event):
         print("pressed", repr(event.char))
