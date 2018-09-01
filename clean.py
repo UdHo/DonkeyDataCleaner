@@ -9,32 +9,70 @@ class DataCleaner:
     def __init__(self, path="."):
         self.path = path
         self.window = Tk()
+        self.pastImages = []
+        self.pastImagenames = []
+        self.futureImages = []
+        self.futureImagenames = []
+        self.frame = Frame(self.window)
         self.panel = Label(self.window)
         self.angle = Label(self.window)
         self.bar = Canvas(self.window, width=200, height=30, bg='white')
         self.imagelist = list(sorted(list(
             filter(lambda x: x.find(".jpg") != -1, os.listdir(path))) , key = lambda x: int(x[:x.find("_")])))
         self.imageiter = iter(self.imagelist)
+        self.panels = [self.panel]
+        for i in range(15):
+            self.loadImageInQueue(next(self.imageiter),False)
+        for i in range(len(self.futureImages)):
+            self.panels.append(Label(self.frame))
+        for i in self.panels:
+            i.pack( side = LEFT )
+        self.frame.pack()
         self.nextImage()
-        self.panel.pack()
+        #self.panel.pack()
         self.angle.pack()
         self.bar.pack()
         self.window.bind("<Key>", self.key)
         self.window.mainloop()
 
+
+    def updateImages(self):
+        print("updateImages")
+        c=0
+        for panel in self.panels:
+            print(panel)
+            print(c)
+            if len(self.futureImages) > c:
+                print("update")
+                panel.config(image = self.futureImages[c])
+            c+=1
+         
+        
     def nextImage(self):
-        self.loadImage(next(self.imageiter))
+        self.loadImageInQueue(next(self.imageiter))
+        self.imagename = self.futureImagenames[0]
+        self.image = self.futureImages[0]
+        #self.image = self.combineImages() 
+        #self.panel.config(image = self.image)
+        self.updateImages()
         self.updateAngle()
+
+    def loadImageInQueue(self, imagename, shift = True):
+        self.futureImages.append(self.loadImage(imagename))
+        self.futureImagenames.append(imagename)
+        if shift:
+          self.futureImages.pop(0)
+          self.futureImagenames.pop(0)
 
     def drawBar(self,angle):
         self.bar.delete("all")
         self.bar.create_rectangle(100 + int(angle*100),0,100,30,fill = "green")
         
-    def loadImage(self, imagePath):
-        self.imagename = imagePath
-        self.image = ImageTk.PhotoImage(
-            Image.open(self.path + "/" + imagePath))
-        self.panel.config(image=self.image)
+    def loadImage(self, imageName):
+        #self.imagename = imageName
+        return ImageTk.PhotoImage(
+            Image.open(self.path + "/" + imageName))
+        #self.panel.config(image=self.image) 
 
     def updateAngle(self):
         jsonfile = "record_" + \
