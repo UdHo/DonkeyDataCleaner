@@ -9,10 +9,6 @@ Start the program in the folder with the recorded data to see the image and the 
 * Every other key write the filename to delete.txt.
 * The script also writes "status"="delete" or "keep" or "change" to the json now!
 * The script continues at the first image without "status" in the json
-## TODO:
-
-* Skip files that are already in the files above.
-* Improve key assignment... ;)
 
 ## Troubleshooting:
 
