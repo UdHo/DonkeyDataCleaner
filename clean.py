@@ -1,6 +1,7 @@
 import sys
 import os
 import json
+import datetime
 from tkinter import *
 from PIL import ImageTk, Image
 
@@ -21,7 +22,7 @@ class DataCleaner:
             filter(lambda x: x.find(".jpg") != -1, os.listdir(path))) , key = lambda x: int(x[:x.find("_")])))
         self.imageiter = iter(self.imagelist)
         self.panels = [self.panel]
-        for i in range(15):
+        for i in range(10):
             self.loadImageInQueue(next(self.imageiter),False)
         for i in range(len(self.futureImages)):
             self.panels.append(Label(self.frame))
@@ -52,6 +53,7 @@ class DataCleaner:
         self.loadImageInQueue(next(self.imageiter))
         self.imagename = self.futureImagenames[0]
         self.image = self.futureImages[0]
+        self.imagenr = self.imagename[:self.imagename.find("_")] 
         #self.image = self.combineImages() 
         #self.panel.config(image = self.image)
         self.updateImages()
@@ -75,14 +77,16 @@ class DataCleaner:
         #self.panel.config(image=self.image) 
 
     def updateAngle(self):
-        jsonfile = "record_" + \
-            self.imagename[:self.imagename.find("_")] + ".json"
-        with open(self.path + "/" + jsonfile) as json_data:
-            d = json.load(json_data)
-            self.angle.config(text=d["user/angle"])
-            print(d)
-        self.drawBar(d["user/angle"])
-
+        self.jsonfile = self.path + "/" + "record_" + \
+            self.imagenr + ".json"
+        print(self.jsonfile)
+        with open(self.jsonfile) as json_data:
+            #print(json_data.read())
+            self.jsonData = json.load(json_data)
+            self.angle.config(text=self.jsonData["user/angle"])
+            print(self.jsonData)
+        self.drawBar(self.jsonData["user/angle"])
+        
     def key(self, event):
         print("pressed", repr(event.char))
         c = event.char
@@ -105,23 +109,38 @@ class DataCleaner:
             except ValueError:
                 print("Delete")
                 self.delete()
+        self.writeJson()
         self.nextImage()
 
     def keep(self):
         f = open("keep.txt", "a+")
         f.write(self.imagename + "\n")
         f.close()
+        self.jsonData["status"] = "keep"
 
     def delete(self):
         f = open("delete.txt", "a+")
         f.write(self.imagename + "\n")
         f.close()
+        self.jsonData["status"] = "delete"
 
     def changeDirection(self, direction):
         f = open("change.txt", "a+")
         f.write(self.imagename + " " + str(direction) + "\n")
         f.close()
+        self.jsonData["status"] = "changed"
+        self.jsonData["oldAngle"] = self.jsonData["user/angle"]
+        self.jsonData["user/angle"] = direction
 
+    def writeJson(self):
+        print(self.futureImagenames[0])
+        f = open(self.jsonfile, "w")
+        print("New jsondata")
+        self.jsonData["changetime"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print(datetime.datetime.now()) 
+        print(self.jsonData)
+        json.dump(self.jsonData, f)
+        f.close()
 
 def main(argv):
     if len(argv) > 0:
