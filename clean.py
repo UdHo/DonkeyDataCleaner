@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import sys
 import os
 import json
@@ -38,13 +39,9 @@ class DataCleaner:
 
 
     def updateImages(self):
-        print("updateImages")
         c=0
         for panel in self.panels:
-            print(panel)
-            print(c)
             if len(self.futureImages) > c:
-                print("update")
                 panel.config(image = self.futureImages[c])
             c+=1
          
@@ -82,20 +79,14 @@ class DataCleaner:
     def updateAngle(self):
         self.jsonfile = self.path + "/" + "record_" + \
             self.imagenr + ".json"
-        print(self.jsonfile)
         with open(self.jsonfile) as json_data:
-            #print(json_data.read())
             self.jsonData = json.load(json_data)
             self.angle.config(text=self.jsonData["user/angle"])
-            print(self.jsonData)
         self.drawBar(self.jsonData["user/angle"])
         
     def skipImage(self, filename):
         with open(self.path+ "/record_" +filename[:filename.find("_")]+".json") as json_data:
             data = json.load(json_data)
-        print(data)
-        print(data.keys())
-        print("status" in data)
         return "status" in data
             
         
@@ -145,12 +136,9 @@ class DataCleaner:
         self.jsonData["user/angle"] = direction
 
     def writeJson(self):
-        print(self.futureImagenames[0])
         f = open(self.jsonfile, "w")
         print("New jsondata")
         self.jsonData["changetime"] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        print(datetime.datetime.now()) 
-        print(self.jsonData)
         json.dump(self.jsonData, f)
         f.close()
 
