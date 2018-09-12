@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 import sys
 import os
 import json
@@ -44,19 +44,19 @@ class DataCleaner:
             if len(self.futureImages) > c:
                 panel.config(image = self.futureImages[c])
             c+=1
-         
-        
+
     def nextImage(self):
         self.loadImageInQueue()
         self.imagename = self.futureImagenames[0]
         self.image = self.futureImages[0]
-        self.imagenr = self.imagename[:self.imagename.find("_")] 
-        #self.image = self.combineImages() 
+        self.imagenr = self.imagename[:self.imagename.find("_")]
+        #self.image = self.combineImages()
         #self.panel.config(image = self.image)
         self.updateImages()
         self.updateAngle()
+        self.frame.winfo_toplevel().title("Cleaner " + self.imagename)
 
-    def loadImageInQueue(self, shift = True):
+    def loadImageInQueue(self, shift=True):
         nextname = next(self.imageiter)
         while self.skipImage(nextname):
             nextname = next(self.imageiter)
@@ -69,12 +69,12 @@ class DataCleaner:
     def drawBar(self,angle):
         self.bar.delete("all")
         self.bar.create_rectangle(100 + int(angle*100),0,100,30,fill = "green")
-        
+
     def loadImage(self, imageName):
         #self.imagename = imageName
         return ImageTk.PhotoImage(
             Image.open(self.path + "/" + imageName))
-        #self.panel.config(image=self.image) 
+        #self.panel.config(image=self.image)
 
     def updateAngle(self):
         self.jsonfile = self.path + "/" + "record_" + \
@@ -83,13 +83,12 @@ class DataCleaner:
             self.jsonData = json.load(json_data)
             self.angle.config(text=self.jsonData["user/angle"])
         self.drawBar(self.jsonData["user/angle"])
-        
+
     def skipImage(self, filename):
         with open(self.path+ "/record_" +filename[:filename.find("_")]+".json") as json_data:
             data = json.load(json_data)
         return "status" in data
-            
-        
+
     def key(self, event):
         print("pressed", repr(event.char))
         c = event.char
